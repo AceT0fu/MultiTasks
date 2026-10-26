@@ -24,20 +24,31 @@ function AddTaskModal({
   return (
     <div className={styles.backdrop}>
       <div className={styles.modal}>
-        <h2>Add Task</h2>
+        <h2 className={styles.title}>
+          Add Task
+        </h2>
 
-        <div>
-          <label>Title</label>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>
+            Title *
+          </label>
+
           <input
+            className={styles.input}
             value={title}
-            onChange={(e) => 
-              setTitle(e.target.value)}
+            onChange={(e) =>
+              setTitle(e.target.value)
+            }
           />
         </div>
 
-        <div>
-          <label>Description</label>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>
+            Description
+          </label>
+
           <textarea
+            className={styles.textarea}
             value={description}
             onChange={(e) =>
               setDescription(e.target.value)
@@ -45,13 +56,21 @@ function AddTaskModal({
           />
         </div>
 
-        <button onClick={handleConfirm}>
-          Confirm
-        </button>
+        <div className={styles.actions}>
+          <button
+            className={styles.cancelButton}
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
 
-        <button onClick={onCancel}>
-          Cancel
-        </button>
+          <button
+            className={styles.confirmButton}
+            onClick={handleConfirm}
+          >
+            Add Task
+          </button>
+        </div>
       </div>
     </div>
   );
