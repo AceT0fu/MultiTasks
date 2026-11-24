@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getTasks, createTask, toggleTaskStatus, deleteTask } from "../services/taskApi";
 import styles from "./TasksPage.module.css";
 import type { Task } from "../types/Task";
 import TaskCard from "../components/TaskCard";
@@ -6,74 +7,51 @@ import AddTaskModal from "../components/AddTaskModal";
 import DeleteTaskModal from "../components/DeleteTaskModal";
 
 function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Learn Spring Boot",
-      description: "Complete REST API tutorial",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Learn React",
-      description: "Build Tasks page",
-      completed: true,
-    },
-    {
-      id: 3,
-      title: "Setup PostgreSQL",
-      description: "Create development database",
-      completed: false,
-    },
-  ]);
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const loadTasks = async () => {
+    const tasks = await getTasks();
+    setTasks(tasks);
+  };
+
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
-  const handleCreateTask = (
+  const [taskToDelete, setTaskToDelete] =
+  useState<Task | null>(null);
+
+  const handleCreateTask = async (
     title: string,
     description: string
   ) => {
-    const newTask: Task = {
-      id: tasks.length + 1,
-      title,
-      description,
-      completed: false,
-    };
+    await createTask(title, description);
 
-    setTasks([...tasks, newTask]);
+    await loadTasks();
+
     setShowAddTaskModal(false);
   };
 
-  const [taskToDelete, setTaskToDelete] =
-    useState<Task | null>(null);
-
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (!taskToDelete) {
       return;
     }
 
-    setTasks(
-      tasks.filter(
-        (task) => task.id !== taskToDelete.id
-      )
-    );
+    await deleteTask(taskToDelete.id);
+
+    await loadTasks();
 
     setTaskToDelete(null);
   };
 
-  const handleToggleComplete = (
+  const handleToggleComplete = async (
     taskId: number
   ) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === taskId
-        ? {
-            ...task,
-            completed: !task.completed,
-          }
-        : task
-    );
+    await toggleTaskStatus(taskId);
 
-    setTasks(updatedTasks);
+    await loadTasks();
   };
 
   const incompleteTasks = tasks.filter(
